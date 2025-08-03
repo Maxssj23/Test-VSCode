@@ -2,8 +2,17 @@ import { db } from '@/lib/db';
 import { auditLogs } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { format } from 'date-fns';
+import { AuditLogTable } from '@/components/audit-log/audit-log-table';
+
+type AuditLogWithUser = {
+  id: string;
+  createdAt: Date;
+  user: { name: string | null } | null;
+  entityTable: string;
+  entityId: string;
+  action: string;
+  diffJson: unknown;
+};
 
 export default async function AuditLogPage() {
   const session = await auth();
@@ -13,42 +22,33 @@ export default async function AuditLogPage() {
     return <div>Not in a household</div>;
   }
 
-  const logs = await db.query.auditLogs.findMany({
+  const logs = (await db.query.auditLogs.findMany({
     where: eq(auditLogs.householdId, householdId),
     with: {
-      user: true,
+      user: {
+        columns: {
+          name: true,
+        },
+      },
+    },
+    columns: {
+      id: true,
+      createdAt: true,
+      entityTable: true,
+      entityId: true,
+      action: true,
+      diffJson: true,
     },
     orderBy: (auditLogs, { desc }) => [desc(auditLogs.createdAt)],
-  });
+  })).map(log => ({
+    ...log,
+    id: String(log.id),
+  })) as AuditLogWithUser[];
 
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Audit Log</h1>
-
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Timestamp</TableHead>
-            <TableHead>User</TableHead>
-            <TableHead>Entity Table</TableHead>
-            <TableHead>Entity ID</TableHead>
-            <TableHead>Action</TableHead>
-            <TableHead>Diff</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {logs.map((log) => (
-            <TableRow key={log.id}>
-              <TableCell>{format(log.createdAt, 'PPP p')}</TableCell>
-              <TableCell>{log.user?.name || 'N/A'}</TableCell>
-              <TableCell>{log.entityTable}</TableCell>
-              <TableCell>{log.entityId}</TableCell>
-              <TableCell>{log.action}</TableCell>
-              <TableCell>{JSON.stringify(log.diffJson)}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <AuditLogTable logs={logs} />
     </div>
   );
 }

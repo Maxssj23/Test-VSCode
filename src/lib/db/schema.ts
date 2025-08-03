@@ -257,9 +257,9 @@ export const auditLogs = pgTable('audit_logs', {
   householdId: uuid('household_id').references(() => households.id).notNull(),
   userId: uuid('user_id').references(() => users.id).notNull(),
   entityTable: varchar('entity_table', { length: 255 }).notNull(),
-  entityId: uuid('entity_id').notNull(),
+  entityId: uuid<string>('entity_id').notNull(),
   action: varchar('action', { length: 50, enum: ['create', 'update', 'delete'] }).notNull(),
-  diffJson: jsonb('diff_json'),
+  diffJson: jsonb<Record<string, unknown>>('diff_json'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 

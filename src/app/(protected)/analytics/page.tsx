@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 import { format } from "date-fns";
 import { AddBudgetForm } from "@/components/features/budgets/add-budget-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { AnalyticsCharts } from "@/components/charts/analytics-charts";
 
 export default async function AnalyticsPage() {
   const session = await auth();
@@ -95,67 +95,11 @@ export default async function AnalyticsPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Spending by Category ({currentMonth})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {spendingByCategory.length > 0 ? (
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie
-                    data={spendingByCategory.map(d => ({ name: d.categoryName, value: parseFloat(d.amount || '0') }))}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    label
-                  >
-                    {spendingByCategory.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <p>No spending data for this month.</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Waste Tracking ({currentMonth})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {wasteData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={200}>
-                <PieChart>
-                  <Pie
-                    data={wasteData.map(d => ({ name: d.reason, value: parseFloat(d.quantity || '0') }))}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    label
-                  >
-                    {wasteData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <p>No waste data for this month.</p>
-            )}
-          </CardContent>
-        </Card>
+        <AnalyticsCharts
+          spendingByCategory={spendingByCategory}
+          wasteData={wasteData}
+          currentMonth={currentMonth}
+        />
       </div>
 
       <Card>

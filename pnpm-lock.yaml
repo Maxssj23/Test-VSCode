@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@auth/drizzle-adapter':
         specifier: ^1.10.0
-        version: 1.10.0
+        version: 1.10.0(nodemailer@7.0.5)
       '@hookform/resolvers':
         specifier: ^5.2.1
         version: 5.2.1(react-hook-form@7.62.0(react@19.1.0))
@@ -61,7 +61,10 @@ importers:
         version: 15.4.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       next-auth:
         specifier: ^4.24.11
-        version: 4.24.11(next@15.4.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+        version: 4.24.11(next@15.4.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(nodemailer@7.0.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      nodemailer:
+        specifier: ^7.0.5
+        version: 7.0.5
       pg:
         specifier: ^8.16.3
         version: 8.16.3
@@ -2477,6 +2480,10 @@ packages:
     resolution: {integrity: sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==}
     hasBin: true
 
+  nodemailer@7.0.5:
+    resolution: {integrity: sha512-nsrh2lO3j4GkLLXoeEksAMgAOqxOv6QumNRVQTJwKH4nuiww6iC2y7GyANs9kRAxCexg3+lTWM3PZ91iLlVjfg==}
+    engines: {node: '>=6.0.0'}
+
   oauth4webapi@3.6.1:
     resolution: {integrity: sha512-b39+drVyA4aNUptFOhkkmGWnG/BE7dT29SW/8PVYElqp7j/DBqzm5SS1G+MUD07XlTcBOAG+6Cb/35Cx2kHIuQ==}
 
@@ -3134,17 +3141,19 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.12
       '@jridgewell/trace-mapping': 0.3.29
 
-  '@auth/core@0.40.0':
+  '@auth/core@0.40.0(nodemailer@7.0.5)':
     dependencies:
       '@panva/hkdf': 1.2.1
       jose: 6.0.12
       oauth4webapi: 3.6.1
       preact: 10.24.3
       preact-render-to-string: 6.5.11(preact@10.24.3)
+    optionalDependencies:
+      nodemailer: 7.0.5
 
-  '@auth/drizzle-adapter@1.10.0':
+  '@auth/drizzle-adapter@1.10.0(nodemailer@7.0.5)':
     dependencies:
-      '@auth/core': 0.40.0
+      '@auth/core': 0.40.0(nodemailer@7.0.5)
     transitivePeerDependencies:
       - '@simplewebauthn/browser'
       - '@simplewebauthn/server'
@@ -5295,7 +5304,7 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  next-auth@4.24.11(next@15.4.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+  next-auth@4.24.11(next@15.4.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(nodemailer@7.0.5)(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
       '@babel/runtime': 7.28.2
       '@panva/hkdf': 1.2.1
@@ -5309,6 +5318,8 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
       uuid: 8.3.2
+    optionalDependencies:
+      nodemailer: 7.0.5
 
   next@15.4.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -5334,6 +5345,8 @@ snapshots:
       - babel-plugin-macros
 
   node-gyp-build@4.8.4: {}
+
+  nodemailer@7.0.5: {}
 
   oauth4webapi@3.6.1: {}
 

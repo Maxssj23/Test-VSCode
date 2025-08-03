@@ -5,7 +5,7 @@ import { shoppingList, purchases, purchaseItems, inventory } from '@/lib/db/sche
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/lib/auth';
-import { eq, and, isNull } from 'drizzle-orm';
+import { eq, and, isNull, inArray } from 'drizzle-orm';
 
 import { createAuditLog } from './audit.actions';
 
@@ -89,7 +89,7 @@ export async function promoteShoppingListToPurchase(prevState: { error: string }
     where: and(
       eq(shoppingList.householdId, householdId),
       isNull(shoppingList.purchasedAt),
-      shoppingList.id.inArray(itemIds)
+      inArray(shoppingList.id, itemIds)
     ),
     with: {
       addedByUser: true,

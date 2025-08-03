@@ -36,6 +36,7 @@ export async function createInventoryItem(formData: FormData) {
 
   const [newInventoryItem] = await db.insert(inventory).values({
     ...validatedFields.data,
+    costTotal: validatedFields.data.costTotal?.toString(),
     householdId,
     createdBy: userId,
   }).returning();
@@ -73,6 +74,7 @@ export async function updateInventoryItem(inventoryItemId: string, formData: For
     .update(inventory)
     .set({
       ...validatedFields.data,
+      costTotal: validatedFields.data.costTotal?.toString(),
       updatedBy: userId,
       updatedAt: new Date(),
     })

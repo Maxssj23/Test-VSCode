@@ -70,7 +70,10 @@ export async function updateBill(billId: string, formData: FormData) {
 
   const [oldBill] = await db.select().from(bills).where(eq(bills.id, billId));
 
-  await db.update(bills).set(validatedFields.data).where(eq(bills.id, billId));
+  await db.update(bills).set({
+    ...validatedFields.data,
+    amount: validatedFields.data.amount.toString(),
+  }).where(eq(bills.id, billId));
 
   const [updatedBill] = await db.select().from(bills).where(eq(bills.id, billId));
 

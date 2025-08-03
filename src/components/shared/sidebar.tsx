@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Home, ShoppingCart, Receipt, List, BarChart, ScrollText, Settings } from 'lucide-react';
 

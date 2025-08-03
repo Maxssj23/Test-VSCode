@@ -28,6 +28,7 @@ export async function createBudget(formData: FormData) {
 
   await db.insert(budgets).values({
     ...validatedFields.data,
+    limitAmount: validatedFields.data.limitAmount.toString(),
     householdId,
   });
 
@@ -49,7 +50,10 @@ export async function updateBudget(budgetId: string, formData: FormData) {
   }
 
   await db.update(budgets)
-    .set(validatedFields.data)
+    .set({
+      ...validatedFields.data,
+      limitAmount: validatedFields.data.limitAmount.toString(),
+    })
     .where(and(eq(budgets.id, budgetId), eq(budgets.householdId, householdId)));
 
   revalidatePath('/analytics');
