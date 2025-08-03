@@ -13,7 +13,7 @@ const shoppingListItemSchema = z.object({
   itemName: z.string().min(1),
 });
 
-export async function addShoppingListItem(formData: FormData) {
+export async function addShoppingListItem(prevState: { error: string } | undefined, formData: FormData) {
   const session = await auth();
   const householdId = session?.user?.householdId;
   const userId = session?.user?.id;
@@ -46,7 +46,8 @@ export async function addShoppingListItem(formData: FormData) {
   revalidatePath('/shopping-list');
 }
 
-export async function markShoppingListItemPurchased(itemId: string) {
+export async function markShoppingListItemPurchased(prevState: { error: string } | undefined, formData: FormData) {
+  const itemId = formData.get('itemId') as string;
   const session = await auth();
   const householdId = session?.user?.householdId;
 
@@ -74,7 +75,8 @@ export async function markShoppingListItemPurchased(itemId: string) {
   revalidatePath('/shopping-list');
 }
 
-export async function promoteShoppingListToPurchase(itemIds: string[]) {
+export async function promoteShoppingListToPurchase(prevState: { error: string } | undefined, formData: FormData) {
+  const itemIds = JSON.parse(formData.get('itemIds') as string);
   const session = await auth();
   const householdId = session?.user?.householdId;
   const userId = session?.user?.id;

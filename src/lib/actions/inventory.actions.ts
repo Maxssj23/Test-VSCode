@@ -92,12 +92,12 @@ export async function updateInventoryItem(inventoryItemId: string, formData: For
   revalidatePath('/inventory');
 }
 
-export async function deleteInventoryItem(inventoryItemId: string) {
+export async function deleteInventoryItem(inventoryItemId: string, _formData: FormData) {
   const session = await auth();
   const householdId = session?.user?.householdId;
 
   if (!householdId) {
-    return { error: 'User is not in a household' };
+    throw new Error('User is not in a household');
   }
 
   const [deletedInventoryItem] = await db.delete(inventory).where(eq(inventory.id, inventoryItemId)).returning();

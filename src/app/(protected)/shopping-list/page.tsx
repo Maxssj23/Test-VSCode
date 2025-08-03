@@ -1,12 +1,12 @@
 import { db } from '@/lib/db';
 import { shoppingList } from '@/lib/db/schema';
-import { eq, isNull } from 'drizzle-orm';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { addShoppingListItem, markShoppingListItemPurchased, promoteShoppingListToPurchase } from '@/lib/actions/shopping-list.actions';
+import { eq } from 'drizzle-orm';
+
 import { auth } from '@/lib/auth';
 import { format } from 'date-fns';
+import { AddShoppingListItemForm } from '@/components/features/shopping-list/add-shopping-list-item-form';
+import { MarkItemPurchasedForm } from '@/components/features/shopping-list/mark-item-purchased-form';
+import { PromoteShoppingListToPurchaseForm } from '@/components/features/shopping-list/promote-shopping-list-to-purchase-form';
 
 export default async function ShoppingListPage() {
   const session = await auth();
@@ -23,18 +23,14 @@ export default async function ShoppingListPage() {
     },
   });
 
-  const pendingItems = items.filter(item => isNull(item.purchasedAt));
-  const purchasedItems = items.filter(item => !isNull(item.purchasedAt));
+  const pendingItems = items.filter(item => item.purchasedAt === null);
+  const purchasedItems = items.filter(item => item.purchasedAt !== null);
 
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Shopping List</h1>
 
-      <form action={addShoppingListItem} className="flex gap-2 mb-8">
-        <Label htmlFor="itemName" className="sr-only">Item Name</Label>
-        <Input id="itemName" name="itemName" placeholder="Add new item" className="flex-1" />
-        <Button type="submit">Add to List</Button>
-      </form>
+      <AddShoppingListItemForm />
 
       <h2 className="text-xl font-semibold mb-2">Pending Items</h2>
       <ul className="space-y-2 mb-8">
@@ -42,9 +38,7 @@ export default async function ShoppingListPage() {
           <li key={item.id} className="flex items-center justify-between bg-gray-100 p-3 rounded-md">
             <span>{item.itemName} (Added by {item.addedByUser?.name})</span>
             <div className="flex gap-2">
-              <form action={markShoppingListItemPurchased.bind(null, item.id)}>
-                <Button type="submit" variant="outline">Mark as Purchased</Button>
-              </form>
+              <MarkItemPurchasedForm itemId={item.id} />
             </div>
           </li>
         ))}
@@ -60,10 +54,9 @@ export default async function ShoppingListPage() {
       </ul>
 
       {pendingItems.length > 0 && (
-        <form action={promoteShoppingListToPurchase.bind(null, pendingItems.map(item => item.id))}>
-          <Button type="submit">Promote All Pending to Purchase</Button>
-        </form>
+        <PromoteShoppingListToPurchaseForm itemIds={pendingItems.map(item => item.id)} />
       )}
     </div>
   );
 }
+

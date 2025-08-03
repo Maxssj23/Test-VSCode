@@ -1,5 +1,4 @@
 import { pgTable, uuid, text, timestamp, varchar, boolean, integer, decimal, jsonb } from 'drizzle-orm/pg-core';
-import { createSelectSchema } from 'drizzle-zod';
 import { relations } from 'drizzle-orm';
 
 export const users = pgTable('users', {
@@ -175,6 +174,8 @@ export const billsRelations = relations(bills, ({ one, many }) => ({
   createdBy: one(users, { fields: [bills.createdBy], references: [users.id] }),
   billPayments: many(billPayments),
 }));
+
+export type Bill = typeof bills.$inferSelect;
 
 export const billPayments = pgTable('bill_payments', {
   id: uuid('id').primaryKey().defaultRandom(),

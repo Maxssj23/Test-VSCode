@@ -1,12 +1,11 @@
-import { db } from '@/lib/db';
-import { budgets, expenses, wasteEvents, users, purchases, bills } from '@/lib/db/schema';
-import { eq, sum, and, sql, gte, lte } from 'drizzle-orm';
-import { auth } from '@/lib/auth';
-import { format } from 'date-fns';
-import { AddBudgetForm } from '@/components/features/budgets/add-budget-form';
-import { BudgetActions } from '@/components/features/budgets/budget-actions';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { db } from "@/lib/db";
+import { budgets, expenses, wasteEvents, users, purchases, categories } from "@/lib/db/schema";
+import { eq, sum, and, sql } from "drizzle-orm";
+import { auth } from "@/lib/auth";
+import { format } from "date-fns";
+import { AddBudgetForm } from "@/components/features/budgets/add-budget-form";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 
 export default async function AnalyticsPage() {
   const session = await auth();
@@ -32,15 +31,15 @@ export default async function AnalyticsPage() {
   const totalSpend = parseFloat(totalSpendResult?.total || '0');
 
   const spendingByCategory = await db.select({
-    categoryName: expenses.category.name,
+    categoryName: categories.name,
     amount: sum(expenses.amount),
   }).from(expenses)
-    .leftJoin(expenses.category, eq(expenses.categoryId, expenses.category.id))
+    .leftJoin(categories, eq(expenses.categoryId, categories.id))
     .where(and(
       eq(expenses.householdId, householdId),
       sql`TO_CHAR(${expenses.date}, 'YYYY-MM') = ${currentMonth}`
     ))
-    .groupBy(expenses.category.name);
+    .groupBy(categories.name);
 
   const wasteData = await db.select({
     reason: wasteEvents.reason,
@@ -63,27 +62,9 @@ export default async function AnalyticsPage() {
     ))
     .groupBy(users.name);
 
-  const billContributions = await db.select({
-    userName: users.name,
-    totalPaid: sum(billPayments.amount),
-  }).from(billPayments)
-    .leftJoin(users, eq(billPayments.paidByUserId, users.id))
-    .leftJoin(bills, eq(billPayments.billId, bills.id))
-    .where(and(
-      eq(bills.householdId, householdId),
-      sql`TO_CHAR(${billPayments.paidOn}, 'YYYY-MM') = ${currentMonth}`
-    ))
-    .groupBy(users.name);
-
   const combinedContributions: { [key: string]: number } = {};
 
   contributionSummary.forEach(c => {
-    if (c.userName) {
-      combinedContributions[c.userName] = (combinedContributions[c.userName] || 0) + parseFloat(c.totalPaid || '0');
-    }
-  });
-
-  billContributions.forEach(c => {
     if (c.userName) {
       combinedContributions[c.userName] = (combinedContributions[c.userName] || 0) + parseFloat(c.totalPaid || '0');
     }

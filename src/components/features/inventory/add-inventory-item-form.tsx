@@ -104,7 +104,7 @@ export function AddInventoryItemForm({ items }: { items: Item[] }) {
               <Label htmlFor="storage" className="text-right">
                 Storage
               </Label>
-              <Select onValueChange={(value) => form.setValue('storage', value)}>
+              <Select onValueChange={(value: "pantry" | "fridge" | "freezer" | "other") => form.setValue('storage', value)}>
                 <SelectTrigger className="col-span-3">
                   <SelectValue placeholder="Select storage location" />
                 </SelectTrigger>

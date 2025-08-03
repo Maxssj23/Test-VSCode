@@ -1,11 +1,6 @@
 import { db } from '@/lib/db';
 import { bills, categories } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { createBill, markBillAsPaid } from '@/lib/actions/bills.actions';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { auth } from '@/lib/auth';
 import { format } from 'date-fns';

@@ -26,7 +26,7 @@ export async function createBill(formData: FormData) {
   const userId = session?.user?.id;
 
   if (!householdId || !userId) {
-    return { error: 'User is not in a household' };
+    throw new Error('User is not in a household');
   }
 
   const validatedFields = billSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -37,6 +37,7 @@ export async function createBill(formData: FormData) {
 
   const [newBill] = await db.insert(bills).values({
     ...validatedFields.data,
+    amount: validatedFields.data.amount.toString(),
     householdId,
     createdBy: userId,
   }).returning();
@@ -58,7 +59,7 @@ export async function updateBill(billId: string, formData: FormData) {
   const householdId = session?.user?.householdId;
 
   if (!householdId) {
-    return { error: 'User is not in a household' };
+    throw new Error('User is not in a household');
   }
 
   const validatedFields = billSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -85,12 +86,13 @@ export async function updateBill(billId: string, formData: FormData) {
   revalidatePath('/bills');
 }
 
-export async function deleteBill(billId: string) {
+export async function deleteBill(prevState: void, formData: FormData) {
+  const billId = formData.get('billId') as string;
   const session = await auth();
   const householdId = session?.user?.householdId;
 
   if (!householdId) {
-    return { error: 'User is not in a household' };
+    throw new Error('User is not in a household');
   }
 
   const [deletedBill] = await db.delete(bills).where(eq(bills.id, billId)).returning();
@@ -107,13 +109,15 @@ export async function deleteBill(billId: string) {
   revalidatePath('/bills');
 }
 
-export async function markBillAsPaid(billId: string, amount: number) {
+export async function markBillAsPaid(formData: FormData) {
+  const billId = formData.get('billId') as string;
+  const amount = parseFloat(formData.get('amount') as string);
   const session = await auth();
   const householdId = session?.user?.householdId;
   const userId = session?.user?.id;
 
   if (!householdId || !userId) {
-    return { error: 'User is not in a household' };
+    throw new Error('User is not in a household');
   }
 
   await db.transaction(async (tx) => {

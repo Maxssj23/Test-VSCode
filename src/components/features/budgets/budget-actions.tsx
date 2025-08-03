@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { deleteBudget, updateBudget } from '@/lib/actions/budgets.actions';
+import { deleteBudgetAction, updateBudget } from '@/lib/actions/budgets.actions';
 import type { Budget } from '@/lib/db/schema';
 import {
   AlertDialog,
@@ -17,8 +17,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { useState } from 'react';
-import { format } from 'date-fns';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -29,8 +27,6 @@ const formSchema = z.object({
 });
 
 export function BudgetActions({ budget }: { budget: Budget }) {
-  const [period, setPeriod] = useState(budget.period);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -98,7 +94,8 @@ export function BudgetActions({ budget }: { budget: Budget }) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <form action={deleteBudget.bind(null, budget.id)}>
+            <form action={deleteBudgetAction}>
+              <input type="hidden" name="budgetId" value={budget.id} />
               <AlertDialogAction type="submit">Continue</AlertDialogAction>
             </form>
           </AlertDialogFooter>

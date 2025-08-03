@@ -9,13 +9,15 @@ import { auth } from '@/lib/auth';
 
 import { eq } from 'drizzle-orm';
 
+import { createAuditLog } from './audit.actions';
+
 const itemSchema = z.object({
   name: z.string().min(1),
   defaultUnit: z.string().optional(),
   perishable: z.boolean(),
 });
 
-export async function createItem(formData: FormData) {
+export async function createItem(prevState: { error: string } | undefined, formData: FormData) {
   const validatedFields = itemSchema.safeParse({
     name: formData.get('name'),
     defaultUnit: formData.get('defaultUnit'),
@@ -85,12 +87,12 @@ export async function updateItem(itemId: string, formData: FormData) {
   revalidatePath('/groceries');
 }
 
-export async function deleteItem(itemId: string) {
+export async function deleteItem(itemId: string, _formData: FormData) {
   const session = await auth();
   const householdId = session?.user?.householdId;
 
   if (!householdId) {
-    return { error: 'User is not in a household' };
+    throw new Error('User is not in a household');
   }
 
   const [deletedItem] = await db.delete(items).where(eq(items.id, itemId)).returning();

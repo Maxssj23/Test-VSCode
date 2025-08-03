@@ -123,7 +123,7 @@ export function InventoryItemActions({ inventoryItem, items }: { inventoryItem: 
                 <Label htmlFor="storage" className="text-right">
                   Storage
                 </Label>
-                <Select name="storage" defaultValue={inventoryItem.storage || ''} onValueChange={(value) => form.setValue('storage', value)}>
+                <Select name="storage" defaultValue={inventoryItem.storage || ''} onValueChange={(value: "pantry" | "fridge" | "freezer" | "other") => form.setValue('storage', value)}>
                   <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select storage location" />
                   </SelectTrigger>

@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { deleteBill, updateBill, markBillAsPaid } from '@/lib/actions/bills.actions';
-import type { Bill, Category } from '@/lib/db/schema';
+import { updateBill, markBillAsPaid } from '@/lib/actions/bills.actions';
+import { DeleteBillForm } from './delete-bill-form';
+import { type Bill, type Category } from '@/lib/db/schema';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -128,7 +129,9 @@ export function BillActions({ bill, categories }: { bill: Bill, categories: Cate
                       selected={dueDate}
                       onSelect={(date) => {
                         setDueDate(date || undefined);
-                        form.setValue('dueDate', date || undefined);
+                        if (date) {
+                          form.setValue('dueDate', date);
+                        }
                       }}
                       initialFocus
                     />
@@ -187,10 +190,7 @@ export function BillActions({ bill, categories }: { bill: Bill, categories: Cate
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <form action={deleteBill.bind(null, bill.id)}>
-              <AlertDialogAction type="submit">Continue</AlertDialogAction>
-            </form>
+            <DeleteBillForm billId={bill.id} />
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -208,7 +208,9 @@ export function BillActions({ bill, categories }: { bill: Bill, categories: Cate
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <form action={markBillAsPaid.bind(null, bill.id, parseFloat(bill.amount))}>
+              <form action={markBillAsPaid}>
+                <input type="hidden" name="billId" value={bill.id} />
+                <input type="hidden" name="amount" value={parseFloat(bill.amount)} />
                 <AlertDialogAction type="submit">Confirm Paid</AlertDialogAction>
               </form>
             </AlertDialogFooter>

@@ -108,7 +108,7 @@ export function AddPurchaseForm({ items }: { items: Item[] }) {
                     selected={purchaseDate}
                     onSelect={(date) => {
                       setPurchaseDate(date || undefined);
-                      form.setValue('purchaseDate', date || undefined);
+                      form.setValue('purchaseDate', date as Date);
                     }}
                     initialFocus
                   />

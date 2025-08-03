@@ -17,7 +17,7 @@ export async function createBudget(formData: FormData) {
   const householdId = session?.user?.householdId;
 
   if (!householdId) {
-    return { error: 'User is not in a household' };
+    throw new Error('User is not in a household');
   }
 
   const validatedFields = budgetSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -39,7 +39,7 @@ export async function updateBudget(budgetId: string, formData: FormData) {
   const householdId = session?.user?.householdId;
 
   if (!householdId) {
-    return { error: 'User is not in a household' };
+    throw new Error('User is not in a household');
   }
 
   const validatedFields = budgetSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -55,15 +55,20 @@ export async function updateBudget(budgetId: string, formData: FormData) {
   revalidatePath('/analytics');
 }
 
-export async function deleteBudget(budgetId: string) {
+export async function deleteBudget(prevState: void, formData: FormData) {
+  const budgetId = formData.get('budgetId') as string;
   const session = await auth();
   const householdId = session?.user?.householdId;
 
   if (!householdId) {
-    return { error: 'User is not in a household' };
+    throw new Error('User is not in a household');
   }
 
   await db.delete(budgets).where(and(eq(budgets.id, budgetId), eq(budgets.householdId, householdId)));
 
   revalidatePath('/analytics');
+}
+
+export async function deleteBudgetAction(formData: FormData) {
+  await deleteBudget(undefined, formData);
 }

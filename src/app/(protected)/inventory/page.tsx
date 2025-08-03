@@ -1,4 +1,17 @@
-import { InventoryItemActions } from '@/components/features/inventory/inventory-item-actions';
+import { AddInventoryItemForm } from "@/components/features/inventory/add-inventory-item-form";
+import { InventoryItemActions } from "@/components/features/inventory/inventory-item-actions";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { inventory, items } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 
 export default async function InventoryPage() {
   const session = await auth();

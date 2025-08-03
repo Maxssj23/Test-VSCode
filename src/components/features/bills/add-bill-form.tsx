@@ -115,7 +115,9 @@ export function AddBillForm({ categories }: { categories: Category[] }) {
                     selected={dueDate}
                     onSelect={(date) => {
                       setDueDate(date || undefined);
-                      form.setValue('dueDate', date || undefined);
+                      if (date) {
+                        form.setValue('dueDate', date);
+                      }
                     }}
                     initialFocus
                   />

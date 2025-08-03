@@ -1,11 +1,10 @@
 import { db } from '@/lib/db';
-import { inventory, bills, budgets, expenses, wasteEvents } from '@/lib/db/schema';
+import { inventory, bills, budgets, expenses, wasteEvents, categories } from '@/lib/db/schema';
 import { eq, and, lte, gte, sql, sum } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
-import { format, addDays, startOfMonth, endOfMonth } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import Link from 'next/link';
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -17,8 +16,6 @@ export default async function DashboardPage() {
 
   const today = new Date();
   const sevenDaysFromNow = addDays(today, 7);
-  const startOfCurrentMonth = startOfMonth(today);
-  const endOfCurrentMonth = endOfMonth(today);
 
   // Groceries expiring soon
   const expiringGroceries = await db.query.inventory.findMany({
@@ -58,15 +55,15 @@ export default async function DashboardPage() {
 
   // Spending by category (current month)
   const spendingByCategory = await db.select({
-    categoryName: expenses.category.name,
+    categoryName: categories.name,
     amount: sum(expenses.amount),
   }).from(expenses)
-    .leftJoin(expenses.category, eq(expenses.categoryId, expenses.category.id))
+    .leftJoin(categories, eq(expenses.categoryId, categories.id))
     .where(and(
       eq(expenses.householdId, householdId),
       sql`TO_CHAR(${expenses.date}, 'YYYY-MM') = ${currentMonth}`
     ))
-    .groupBy(expenses.category.name);
+    .groupBy(categories.name);
 
   // Waste % this month
   const wasteData = await db.select({
