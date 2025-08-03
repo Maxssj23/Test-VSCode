@@ -7,18 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { createItem } from '@/lib/actions/items.actions';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-
-import { db } from '@/lib/db';
-import { items } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { createItem } from '@/lib/actions/items.actions';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { auth } from '@/lib/auth';
-
 import { ItemActions } from '@/components/features/groceries/item-actions';
 
 export default async function GroceriesPage() {
